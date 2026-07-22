@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CISP 刷题宝 · 精选100题</title>
+<style>
+/* ===== Reset & Base ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a; --bg-card:#121829; --bg-card-hover:#1a2238;
+  --surface:#0f1424; --border:#1e2a44;
+  --text:#e2e8f0; --text-dim:#8390b0; --text-muted:#4a5878;
+  --accent:#00d4aa; --accent-glow:rgba(0,212,170,.15);
+  --correct:#00d4aa; --wrong:#ff4d6d; --wrong-glow:rgba(255,77,109,.12);
+  --warn:#ffb347; --info:#5b9fff;
+  --radius:14px; --radius-sm:8px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --transition:.25s cubic-bezier(.4,0,.2,1);
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.7;
+  min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#2a3a5c}
+
+/* ===== Layout ===== */
+#app{min-height:100vh;display:flex;flex-direction:column}
+
+/* ===== Header ===== */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,14,26,.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.logo-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),#008f73);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;color:#0a0e1a;
+  box-shadow:0 0 20px var(--accent-glow);
+}
+.logo-text{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.logo-text span{color:var(--accent)}
+.header-nav{display:flex;gap:6px;align-items:center}
+.nav-btn{
+  padding:8px 16px;border-radius:var(--radius-sm);
+  background:transparent;border:1px solid transparent;
+  color:var(--text-dim);font-size:14px;font-weight:500;
+  cursor:pointer;transition:var(--transition);white-space:nowrap;
+}
+.nav-btn:hover{color:var(--text);background:var(--bg-card)}
+.nav-btn.active{color:var(--accent);background:var(--accent-glow);border-color:rgba(0,212,170,.2)}
+
+/* ===== Views ===== */
+.view{display:none;flex:1;padding:24px;max-width:1100px;width:100%;margin:0 auto;animation:fadeIn .3s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ===== Dashboard ===== */
+.dash-hero{
+  text-align:center;padding:48px 20px 40px;
+}
+.dash-hero h1{
+  font-size:2.4rem;font-weight:800;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--text) 30%,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;
+}
+.dash-hero p{color:var(--text-dim);font-size:1rem;max-width:500px;margin:0 auto}
+
+.stats-row{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;
+  margin-bottom:32px;
+}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;text-align:center;
+  transition:var(--transition);
+}
+.stat-card:hover{border-color:rgba(0,212,170,.2);transform:translateY(-2px)}
+.stat-value{font-size:2rem;font-weight:800;color:var(--accent)}
+.stat-label{font-size:.8rem;color:var(--text-dim);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+
+.mode-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:36px;
+}
+.mode-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;cursor:pointer;
+  transition:var(--transition);position:relative;overflow:hidden;
+}
+.mode-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent);opacity:0;transition:var(--transition);
+}
+.mode-card:hover{border-color:rgba(0,212,170,.3);background:var(--bg-card-hover);transform:translateY(-3px)}
+.mode-card:hover::before{opacity:1}
+.mode-icon{font-size:2rem;margin-bottom:12px}
+.mode-card h3{font-size:1.2rem;margin-bottom:8px}
+.mode-card p{color:var(--text-dim);font-size:.9rem;line-height:1.5}
+
+/* Domain list */
+.section-title{
+  font-size:1.1rem;font-weight:700;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title::before{
+  content:'';width:4px;height:20px;background:var(--accent);border-radius:2px;
+}
+.domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.domain-item{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px;cursor:pointer;
+  transition:var(--transition);display:flex;align-items:center;justify-content:space-between;
+}
+.domain-item:hover{border-color:rgba(0,212,170,.3);background:var(--bg-card-hover)}
+.domain-name{font-size:.9rem;font-weight:500}
+.domain-count{
+  background:var(--accent-glow);color:var(--accent);
+  padding:2px 10px;border-radius:20px;font-size:.8rem;font-weight:700;
+}
+.domain-progress-bar{
+  height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden;
+}
+.domain-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .5s ease}
+
+/* ===== Quiz View ===== */
+.quiz-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.quiz-info{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.quiz-domain-tag{
+  background:var(--accent-glow);color:var(--accent);
+  padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;
+}
+.quiz-counter{font-size:.9rem;color:var(--text-dim)}
+.quiz-counter span{color:var(--text);font-weight:700}
+.quiz-timer{
+  font-family:"SF Mono","Fira Code",monospace;font-size:1rem;
+  color:var(--warn);font-weight:600;
+}
+.progress-track{
+  height:4px;background:var(--border);border-radius:2px;margin-bottom:24px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--accent),#008f73);
+  border-radius:2px;transition:width .4s ease;
+}
+
+.question-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);
+  margin-bottom:20px;
+}
+.q-number{
+  display:inline-block;font-size:.8rem;color:var(--text-muted);
+  margin-bottom:12px;letter-spacing:1px;
+}
+.q-text{font-size:1.05rem;line-height:1.8;color:var(--text);margin-bottom:24px}
+
+.options-list{display:flex;flex-direction:column;gap:10px}
+.option-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);cursor:pointer;
+  transition:var(--transition);user-select:none;
+}
+.option-item:hover{border-color:var(--accent);background:var(--bg-card-hover)}
+.option-letter{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;color:var(--text-dim);transition:var(--transition);
+}
+.option-item:hover .option-letter{border-color:var(--accent);color:var(--accent)}
+.option-text{flex:1;font-size:.95rem;line-height:1.6;padding-top:3px}
+
+/* Answered states */
+.option-item.correct{border-color:var(--correct);background:rgba(0,212,170,.06)}
+.option-item.correct .option-letter{background:var(--correct);border-color:var(--correct);color:#0a0e1a}
+.option-item.wrong{border-color:var(--wrong);background:var(--wrong-glow)}
+.option-item.wrong .option-letter{background:var(--wrong);border-color:var(--wrong);color:#fff}
+.option-item.disabled{cursor:default;pointer-events:none}
+.option-item.disabled:hover{border-color:var(--border);background:var(--bg-card)}
+
+/* Feedback */
+.feedback-box{
+  margin-top:16px;padding:16px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;gap:10px;font-weight:600;
+  animation:fadeIn .3s ease;
+}
+.feedback-box.correct{background:rgba(0,212,170,.08);color:var(--correct);border:1px solid rgba(0,212,170,.2)}
+.feedback-box.wrong{background:var(--wrong-glow);color:var(--wrong);border:1px solid rgba(255,77,109,.2)}
+
+/* Quiz controls */
+.quiz-controls{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;
+}
+.btn{
+  padding:10px 24px;border-radius:var(--radius-sm);
+  font-size:.95rem;font-weight:600;cursor:pointer;
+  transition:var(--transition);border:none;white-space:nowrap;
+}
+.btn-primary{background:var(--accent);color:#0a0e1a}
+.btn-primary:hover{box-shadow:0 0 20px var(--accent-glow);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--text-dim)}
+.btn-danger{background:transparent;color:var(--wrong);border:1px solid rgba(255,77,109,.3)}
+.btn-danger:hover{background:var(--wrong-glow)}
+
+/* Question palette */
+.palette-toggle{
+  position:fixed;bottom:24px;right:24px;z-index:50;
+  width:48px;height:48px;border-radius:50%;
+  background:var(--accent);color:#0a0e1a;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:800;cursor:pointer;
+  box-shadow:0 4px 20px var(--accent-glow);transition:var(--transition);
+}
+.palette-toggle:hover{transform:scale(1.1)}
+
+.palette-panel{
+  position:fixed;bottom:80px;right:24px;z-index:50;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);
+  display:none;max-width:340px;
+}
+.palette-panel.show{display:block;animation:fadeIn .2s ease}
+.palette-title{font-size:.85rem;color:var(--text-dim);margin-bottom:12px}
+.palette-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.palette-cell{
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:600;cursor:pointer;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text-dim);transition:var(--transition);
+}
+.palette-cell:hover{border-color:var(--accent);color:var(--text)}
+.palette-cell.current{background:var(--accent);color:#0a0e1a;border-color:var(--accent)}
+.palette-cell.done{background:rgba(0,212,170,.15);color:var(--correct);border-color:rgba(0,212,170,.3)}
+.palette-cell.wrong{background:var(--wrong-glow);color:var(--wrong);border-color:rgba(255,77,109,.3)}
+
+/* ===== Exam Results ===== */
+.result-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:36px;text-align:center;box-shadow:var(--shadow);
+}
+.result-score{
+  font-size:3rem;font-weight:800;margin:16px 0;
+}
+.result-score.pass{color:var(--correct)}
+.result-score.fail{color:var(--wrong)}
+.result-detail{color:var(--text-dim);font-size:.95rem;margin-bottom:24px}
+.result-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0;
+}
+.result-stat{padding:16px;background:var(--surface);border-radius:var(--radius-sm)}
+.result-stat-val{font-size:1.6rem;font-weight:700}
+.result-stat-lbl{font-size:.8rem;color:var(--text-dim);margin-top:4px}
+
+.result-review{margin-top:24px;text-align:left}
+.review-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;
+}
+.review-item.wrong{border-color:rgba(255,77,109,.2)}
+.review-q{font-size:.9rem;margin-bottom:8px;color:var(--text)}
+.review-answer{font-size:.85rem;display:flex;gap:16px;flex-wrap:wrap}
+.review-tag{padding:2px 8px;border-radius:4px;font-weight:600}
+.review-tag.your{background:var(--wrong-glow);color:var(--wrong)}
+.review-tag.correct{background:rgba(0,212,170,.1);color:var(--correct)}
+
+/* ===== Settings panel ===== */
+.settings-bar{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;
+  padding:16px;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);
+}
+.settings-group{display:flex;align-items:center;gap:8px}
+.settings-label{font-size:.85rem;color:var(--text-dim)}
+.select{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:6px 12px;color:var(--text);
+  font-size:.85rem;cursor:pointer;
+}
+.select:focus{outline:none;border-color:var(--accent)}
+
+/* ===== Empty state ===== */
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--text-dim);
+}
+.empty-state-icon{font-size:3rem;margin-bottom:16px;opacity:.3}
+
+/* ===== Responsive ===== */
+@media(max-width:640px){
+  .header{padding:0 12px}
+  .logo-text{font-size:15px}
+  .nav-btn{padding:6px 10px;font-size:.8rem}
+  .view{padding:16px}
+  .dash-hero h1{font-size:1.6rem}
+  .question-card{padding:18px}
+  .q-text{font-size:.95rem}
+  .palette-grid{grid-template-columns:repeat(8,1fr)}
+  .result-stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo" onclick="goHome()">
+      <div class="logo-icon">C</div>
+      <div class="logo-text">CISP<span>刷题宝</span></div>
+    </div>
+    <nav class="header-nav" id="headerNav">
+      <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">首页</button>
+      <button class="nav-btn" data-view="practice" onclick="switchView('practice')">练习</button>
+      <button class="nav-btn" data-view="exam" onclick="switchView('exam')">模拟考</button>
+    </nav>
+  </header>
+
+  <!-- Dashboard View -->
+  <div class="view active" id="view-dashboard">
+    <div class="dash-hero">
+      <h1>CISP 精选100题</h1>
+      <p>覆盖信息安全保障、密码学、网络安全、访问控制等14个知识域，从300题题库中精简提炼</p>
+    </div>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="mode-grid">
+      <div class="mode-card" onclick="startPractice('all')">
+        <div class="mode-icon">📖</div>
+        <h3>顺序练习</h3>
+        <p>按顺序刷完所有题目，答错可查看解析，适合系统复习</p>
+      </div>
+      <div class="mode-card" onclick="startPractice('random')">
+        <div class="mode-icon">🎲</div>
+        <h3>随机练习</h3>
+        <p>打乱题目顺序，检验你的真实掌握程度</p>
+      </div>
+      <div class="mode-card" onclick="startPractice('wrong')">
+        <div class="mode-icon">🎯</div>
+        <h3>错题重练</h3>
+        <p>专注于你做错的题目，反复练习直到掌握</p>
+      </div>
+      <div class="mode-card" onclick="switchView('exam')">
+        <div class="mode-icon">⏱️</div>
+        <h3>模拟考试</h3>
+        <p>100题限时60分钟，交卷后查看成绩与错题回顾</p>
+      </div>
+    </div>
+
+    <div class="section-title">按知识域刷题</div>
+    <div class="domain-grid" id="domainGrid"></div>
+  </div>
+
+  <!-- Practice View -->
+  <div class="view" id="view-practice">
+    <div class="quiz-header">
+      <div class="quiz-info">
+        <span class="quiz-domain-tag" id="practiceDomain">全部题目</span>
+        <span class="quiz-counter"><span id="practiceCurrent">0</span> / <span id="practiceTotal">0</span></span>
+      </div>
+      <button class="btn btn-ghost" onclick="goHome()">退出练习</button>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="practiceProgress" style="width:0%"></div></div>
+    <div id="practiceContent"></div>
+    <div class="quiz-controls" id="practiceControls" style="display:none">
+      <button class="btn btn-ghost" onclick="prevPracticeQuestion()">上一题</button>
+      <button class="btn btn-primary" id="practiceNextBtn" onclick="nextPracticeQuestion()" disabled>下一题</button>
+    </div>
+    <div class="palette-toggle" onclick="togglePalette('practice')" title="题目导航">≡</div>
+    <div class="palette-panel" id="practicePalette"></div>
+  </div>
+
+  <!-- Exam View -->
+  <div class="view" id="view-exam">
+    <div id="examSetup">
+      <div class="dash-hero">
+        <h1>模拟考试</h1>
+        <p>100题限时60分钟，考察你的综合掌握程度</p>
+      </div>
+      <div class="mode-card" style="max-width:400px;margin:0 auto" onclick="startExam()">
+        <div class="mode-icon">📝</div>
+        <h3>开始考试</h3>
+        <p>共100题 · 限时60分钟 · 交卷后查看成绩</p>
+      </div>
+    </div>
+    <div id="examContent" style="display:none"></div>
+    <div id="examResult" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+// ===== Question Data =====
+const QUESTIONS = [{"id":1,"domain":"标准与法规","question":"安全管理体系,国际上有标准( Information technology Security tech nformation systems)(ISO/IEC 27001-2013),而我国发布了《信息技术信息安全管 理体系要求》(GBT 22080-2008)请问,这两个标准的关系是","options":{"A":"IDT(等同采用),此国家标准等同于该国际标准,仅有或没有编辑性修改","B":"EQV(等效采用),此国家标准等效于该国家标准,技术上只有很小差异","C":"AEQ(等效采用),此国家标准不等效于该国家标准","D":"没有采用与否的关系,两者之间版本不同,不应直接比较"},"answer":"D"},{"id":2,"domain":"标准与法规","question":"为了进一步提高信息安全的保障能力和防护水平,保障和促进信息化建设的健康发展,公安部等四部门联 合发布《关于信息安全等级保护工作的实施意见》(公通字[2004166 号),对等级保护工作的开展提供宏观指 导和约東。明确了等级保护工作的基本内容、工作要求和实施计划,以及各部门工作职责分工等。关于该文 件,下面理解正确的是","options":{"A":"该文件是一个由部委发布的政策性文件,不属于法律文件。","B":"该文件适用于 2004 年的等级保护工作。其内容不能约束到 2005 年及之后的工作。","C":"该文件是一个总体性指导文件,规定了所有信息系统都要纳入等级保护定级范围","D":"该文件适用范围为发文的这四个部门,不适用于其他部门和企业等单位"},"answer":"A"},{"id":3,"domain":"密码学","question":"分组密码算法是一类十分重要的密码算法,下面描述中,错误的是","options":{"A":"分组密码算法要求输入明文按组分成固定长度的块","B":"分组密码算法每次计算得到固定长度的密文输出块","C":"分组密码算法也称为序列密码算法","D":"常见的 DES、IDEA 算法都属于分组密码算法"},"answer":"C"},{"id":4,"domain":"密码学","question":"美国计算机协会(ACM)宣布将 2015 年的 ACM 奖授予给 Whitfield Diffiic 和 Artfield 下面哪项工作是他 们的贡献","options":{"A":"发明并第一个使用 c 语言","B":"第一个发表了对称密码算法思想","C":"第一个发表了非对称密码算法思想","D":"第一个研制出防火墙"},"answer":"C"},{"id":5,"domain":"身份鉴别","question":"为防范网络欺诈确保交易安全,网银系统首先要求用户安全登录,然后使用“智能卡→ 短信证模式进行 网上转账等交易。在此场景中用到下列哪些鉴别方法?","options":{"A":"实体“所知”以及实体“所有”的鉴别方法","B":"实体“所有”以及实体“特征”的鉴别方法","C":"实体“所知”以及实体“特征”的鉴别方法","D":"实体“所有”以及实体“行为”的鉴别方法"},"answer":"A"},{"id":6,"domain":"身份鉴别","question":"实体身份鉴别一般依据以下三种基本情况或这三种情况的组合:实体所知的鉴别方法、实体所有的鉴别 方法和基于实体特征的鉴别方法。下面选项中属于实体特征的鉴别方法是","options":{"A":"将登录口令设置为出生日期","B":"通过询问和核对用户的个人隐私信息来鉴","C":"使用系统定制的、在本系统专用的 Ic 卡进行鉴别","D":"通过扫脸和识别用户的脸部信息来鉴别"},"answer":"D"},{"id":7,"domain":"访问控制","question":"常见的访问控制模型包括自主访问控制模型、强制访问控制模型和基于角色的访问控制模型等。下面 描述中错误的是","options":{"A":"从安全性等级来看,这三个模型安全性从低到高的排序是自主访问控制模型、强制访问控制模型和基于角 色的访问控制模型","B":"自主访问控制是一种广泛应用的方法,资源的所有者(往往也是创建者)可以规定谁有权访问它们的资源, 具有较好的易用性和扩展性","C":"强制访问控制模型要求主题和客体都一个固定的安全属性,系统用该安全属性来决定一个主体是否可以 访问某个客体。该模型具有一定的抗悉意程序攻击能力,适用于专用或安全性要求较高的系统","D":"基于角色的访问控制模型的基本思想是根据用户所担任的角色来决定用户在系统中的访问权限,该模型 便于实施授权管理和安全约束,容易实现最小特权、职责分离等各种安全策略"},"answer":"A"},{"id":8,"domain":"访问控制","question":"在信息系统中,访问控制是重要的安全功能之一。他的任务是在用户对系统资源提供最大限度共享的基 础上,对用户的访问权限进行管理,防止对信息的非授权篡改和滥用。访问控制模型将实体划分为主体和客 体两类,通过对主体身份的识别来限制其对客体的访问权限。下列选项中,对主体、客体和访问权限的描述 中错误的是","options":{"A":"对文件进行操作的用户是一种主体","B":"主体可以接受客体的信息和数据,也可能改变客体相关的信息","C":"访问权限是指主体对客体所允许的操作","D":"对目录的访问权可分为读、写和拒绝访问"},"answer":"D"},{"id":9,"domain":"访问控制","question":"访问控制方法可分为自主访问控制、强制访问控制和基于角色的访问控制,他们具有不同的特点和应用 场景。如果需要选择一个访问控制方法,要求能够支持最小特权原则和职责分离原则,而且在不同的系统配 置下可以具有不同的安全控制,那么在下列选项中,能够满足以上要求的选项是","options":{"A":"自主访问控制","B":"强制访问控制","C":"基于角色的访问控制","D":"以上选项都可以"},"answer":"C"},{"id":10,"domain":"网络安全","question":"关于 Wi-FI 联盟提出的安全协议 WPA 和 WPA2 的区别,下面描述正确的是","options":{"A":"WPA 是有线局域安全协议,而 WPA2 是无线局域网协议","B":"WPA 是适用于中国的无线局域安全协议,而 WPA2 适用于全世界的无线局域网协议","C":"WPA 没有使用密码算法对接入进行认证,而 WPA2 使用了密码算法对接入进行认证","D":"WPA 是依照 802.111 标准草案制定的,而 WPA2 是依照 802.111 正式标准制定的"},"answer":"D"},{"id":11,"domain":"应用安全","question":"随着高校业务资源逐渐向数据中心高度集中,Web 成为一种普适平台,上面承载了越来越多的核心业务。 Web 的开放性带来丰富资源、高效率、新工作方式的同时,也使机构的重要信息暴露在越来越多的威胁中。 去年,某个…网站遭遇 SQL 群注入( Mass SQL Injectior)攻击,网站发布的重要信息被篡改成为大量签名,所以 该校在某信息安全公司的建议下配置了状态检测防火墙,其原因不包括","options":{"A":"状态检测防火墙可以应用会话信息决定过滤规则","B":"状态检测防火墙具有记录通过每个包的详细信息能力","C":"状态检测防火墙过滤规则与应用层无关,相比于包过滤防火墙更易安装和使用","D":"状态检测防火墙结合网络配置和安全规定做出接纳、拒绝、身份认证或报警等处理动作答"},"answer":"C"},{"id":12,"domain":"网络安全","question":"异常入侵检测是入侵检测系统常用的一种技术,它是识别系统或用户的非正常行为或者对于计算机资源 的非正常使用,从而检测出入侵行为。下面说法错误的是","options":{"A":"在异常入侵检测中,观察到的不是已知的入侵行为,而是系统运行过程中的异常现象","B":"实施异常入侵检测,是将当前获取行为数据和已知入侵攻击行为特征相比较,若匹配则认为有攻击发生","C":"异常入侵检测可以通过获得的网络运行状态数据,判断其中是否含有攻击的企图,并通过多 种手段向管理员报警","D":"异常入侵检测不但可以发现从外部的攻击,也可以发现内部的恶意行为"},"answer":"B"},{"id":13,"domain":"操作系统安全","question":"操作系统用于管理计算机资源,控制整个系统运行,是计算机软件的基础。操作系统安全是计算、网络 及信息系统安全的基础。一般操作系统都提供了相应的安全配置接口。小王新买了一台计算机,开机后首先 对自带的 Windows 操作系统进行配置。他的主要操作有:(1)关闭不必要的服务和端口;(2)在“在本地安全策 略”重配置账号策略、本地策略、公钥策略和 iP 安全策略(3)备份敏感文件,禁止建立空连接,下载最新补丁;(4) 关闭审核策略,开启口令策略,开启账号策略。这些操作中错误的是","options":{"A":"操作(1),应该关闭不必要的服务和所有端口","B":"操作(2),在“本地安全策略”中不应该配置公钥策略,而应该配置私钥策略","C":"操作(3),备份敏感文件会导致这些文件遭到窃取的几率增加","D":"操作(4),应该开启审核策略"},"answer":"D"},{"id":14,"domain":"操作系统安全","question":"从 Linux 内核 21 版开始 ,实现了 基于权能的特 权管理机制 ,实现了 超级用户的特 权分割,打破 了 UNIXLINUX 操作系统中超级用户/普通用户的概念,提高了操作系统的安全性。下列选项中,对特权管理机 制的理解错误的是","options":{"A":"普通用户及其 shell 没有任何权能,而超级用户及其 shel1 在系统启动之初拥有全部权能","B":"系统管理员可以剥夺和恢复超级用户的某些权能","C":"进程可以放弃自己的某些权能","D":"当普通用户的某些操作涉及特权操作时,仍然通过 setuid 实现"},"answer":"B"},{"id":15,"domain":"数据安全","question":"关于数据库恢复技术,下列说法不正确的是","options":{"A":"数据库恢复技术的实现主要依靠各种数据的冗余和恢复机制技术来解决,当数据库中数据被破坏时,可以 利用冗余数据来进行修复","B":"数据库管理员定期地将整个数据库或部分数据库文件备份到磁带或另一个磁盘上保存起来是数据库恢复 中采用的基本技术","C":"日志文件在数据库恢复中起着非常重要的作用,可以用来进行事物故障恢复和系统故障恢复,并协助后备 副本进行介质故障恢复","D":"计算机系统发生故障导致数据未存储到固定存储器上,利用日志文件中故障发生前数据的值,将数据库恢 复到故障发生前的完整状态,这一对事务的操作称为提交"},"answer":"D"},{"id":16,"domain":"密码学","question":"安全多用途互联网邮件扩展( Secure Nultipurpose Internet Mail Extension, S/MIME)是指一种保障邮件安 全的技术,下面描述错误的是","options":{"A":"S/MIME 采用了非对称密码学机制","B":"S/MIME 支持数字证书","C":"S/MIME 采用了邮件防火墙技术","D":"S/MIME 支持用户身份认证和邮件加密"},"answer":"C"},{"id":17,"domain":"应用安全","question":"针对软件的拒绝服务攻击时通过消耗系统资源是软件无法响应正常请求的一种攻击方式,在软件开发时 分析拒绝服务攻击的威胁,以下哪个不是需要考虑的攻击方式","options":{"A":"攻击者利用软件存在逻辑错误,通过发送某种类型数据导致运算进入死循环,CPU 资源占用始终 100%","B":"攻击者利用软件脚本使用多重账套査询在数据量大时会导致査询效率低,通过发送大量的査询导致数据 库相应缓慢","C":"攻击者利用软件不自动释放连接的问题,通过发送大量连接的消耗软件并发生连接数,导致并发连接数耗 尽而无法访问","D":"攻击者买通了 IDC 人员,将某软件运行服务器的网线拔掉导致无法访问"},"answer":"D"},{"id":18,"domain":"网络安全","question":"某网站为了更好向用户提供服务,在新版本设计时提供了用户快捷登陆功能,用户如果使用上次的 IP 地 址进行访问,就可以无需验证直接登录,该功能推出后,导致大量用户账号被盗用,关于以上问题的说法正确 的是","options":{"A":"网站问题是由于开发人员不熟悉安全编码,编写了不安全的代码导致攻击面增大,产生此安 全问题","B":"网站问题是由于用户缺乏安全意识导致,使用了不安全的功能,导致网站攻击面增大,产生此问题","C":"网站问题是由于使用便利性提高带来网站用户数增加,导致网络攻击面增大,产生此安全问","D":"网站问题是设计人员不了解安全设计关键要素,设计了不安全的功能,导致网站攻击面增大,产生此安全问 题"},"answer":"D"},{"id":19,"domain":"应用安全","question":"为了保障系统安全,某单位需要对其跨地区大型网络实时应用系统进行滲透测试,以下关于渗透测试过 程的说法不正确的是","options":{"A":"由于在实际渗透测试过程中存在不可预知的风险,所以测试前要提醒用户进行系统和数据备份,以便出现 问题时可以及时恢复系统和数据","B":"渗透测试从“逆向”的角度出发,测试软件系统的安全性,其价值在于可以测试软件在实际系统中运行时的 安全状况","C":"渗透测试应当经过方案制定、信息收集、漏洞利用、完成渗透测试报告等步骤","D":"为了深入发掘该系统存在的安全威胁应该在系统正常业务运行高峰期进行渗透测试"},"answer":"D"},{"id":20,"domain":"安全管理","question":"降低风险(或减低风险)是指通过对面临风险的资产采取保护措施的方式来降低风险,下面哪个措施不属 于降低风险的措施","options":{"A":"减少威胁源。采用法律的手段制按计算机犯罪,发挥法律的威慑作用,从而有效遏制威胁源的动机","B":"签订外包服务合同。将有技术难点、存在实现风险的任务通过签订外部合同的方式交予第三方公司完成, 通过合同责任条款来应对风险","C":"减少脆弱性。及时给系统补丁,关闭无用的网络服务端口,从而减少系统的脆弱性,降低被利用的可能性"},"answer":"B"},{"id":21,"domain":"安全管理","question":"GB T22080-2008《信息技术安全技术信息安全管理体系要求》指出,建立信息安全管理体系应参照 PDCA 模型进行,即信息安全管理体系应包括建立 ISMS、实施和运行 SMS、监视和评审 ISMS、保持和改进 ISMS 等过程,并在这些过程中应实施若干活动。请选出以下描述错误的选项","options":{"A":"“制定 ISMS 方针”是建立 ISMS 阶段工作内容","B":"“实施培训和意识教育计划”是实施和运行 ISMS 阶段工作内容","C":"“进行有效性测量”是监视和评审 ISMS 阶段工作内容","D":"“实施内部审核”是保持和改进 ISMS 阶段工作内容"},"answer":"D"},{"id":22,"domain":"信息安全保障","question":"关于信息安全保障技术框架( Information Assurance Tehnical Frameworkat-),下面描述错误的是","options":{"A":"IATF 最初由美国国家安全局(NSA)发布,后来由国际标准化组织(IS0)转化为国际标准,供各个国家信息系 统建设参考使用","B":"IATF 是一个通用框架,可以用到多种应用场景中,通过对复杂信息系统进行解构和描述,然 后再以此框架讨论信息系统的安全保护问题","C":"IATF 提出了深度防御的战略思想,并提供一个框架进行多层保护,以此防范信息系统面临的各种威胁","D":"强调人、技术和操作是深度防御的三个主要层面,也就是说讨论人在技术支持下运行维护的信息安全保障 问题"},"answer":"A"},{"id":23,"domain":"信息安全保障","question":"2003 年以来,我国高度重视信息安全保障工作,先后制定并发布了多个文件,从政策层面为开展并推进信 息安全保障工作进行了规划。下面选项中哪个不是我国发布的文件","options":{"A":"《国家信息化领导小组关于加强信息安全保障工作的意见》(中办发[2003]27 号)","B":"《国家网络安全综合计划(CNCI)》(国令[2008]54 号)","C":"《国家信息安全战略报告》(国信[2005]2 号)","D":"《关于大力推进信息化发展和切实保障信息安全的若干意见》(国发[2012123 号)"},"answer":"B"},{"id":24,"domain":"安全管理","question":"为保障信息系统的安全,某经营公共服务系统的公司准备并编制一份针对性的信息安全保障方案,并将 编制任务交给了小王,为此,小王决定首先编制出一份信息安全需求报告。关于此项工作,下面说法错误的是","options":{"A":"信息安全需求是安全方案设计和安全措施的依据","B":"信息安全需求应当是从信息系统所有者(用户)的角度出发,使用规范化、结构化的语言来描述信息系统安 全保障需求","C":"信息安全需求应当基于信息安全风险评估结果、业务需求和有关政策法规和标准的合规性要求得到","D":"信息安全需求来自于该公众服务信息系统的功能设计方案"},"answer":"D"},{"id":25,"domain":"标准与法规","question":"某项目的主要内容为建造 A 类机房,监理单位需要根据《电子信息系统机房设计规范》(GB50174-2008) 的相关要求,对承建单位的施工设计方案进行审核,以下关于监理单位给出的审核意见错误的是","options":{"A":"在异地建立备份机房,设计时应与主要机房等级相同","B":"由于高端小型机发热量大,因此采用活动地板下送风,上回风的方式","C":"因机房属于 A 级主机房,因此设计方案中应考虑配备柴油发电机,当市电发生故障时所配备的柴油发电机 应能承担全部负荷的需要","D":"A 级主机房应设置自动喷水灭火系统"},"answer":"D"},{"id":26,"domain":"操作系统安全","question":"有关系统安全工程-能力成熟度模型(SEE-CMM)中的基本实施( Base Practices,BP),正确的理解是:","options":{"A":"BP 不限定于特定的方法或工具,不同的业务背景中可以使用不同的方法","B":"BP 不是根据广泛的现有资料、实践和专家意见综合得出的","C":"BP 不代表信息安全工程领域的最佳实践","D":"BP 不是过程区域( Process Areas,PA)的强制项"},"answer":"A"},{"id":27,"domain":"标准与法规","question":"在使用系统安全工程-能力成熟度模型(SSE-CMM)对一个组织的安全工程能力成熟度进行测量时,有关 测量结果,错误的理解是","options":{"A":"如果该组织在执行某个特定的过程区域时具备某一个特定级别的部分公共特征时,则这个组织在这个过 程区域的能力成熟度未达到此级","B":"如果该组织某个过程区域( Process Areas,PA)具备了“定义标准过程”、“执行已定义的过程”两个公共特 征,则过程区域的能力成熟度级别达到 3 级“充分定义级”","C":"如果某个过程区域( Process Areas,PA)包含 4 个基本实施( Base Practices,BP),执行此 PA 时执了 3 个 BP,则此 过程区域的能力成熟度级别为 0","D":"组织在不同的过程区域的能力成熟度可能处于不同的级别上"},"answer":"B"},{"id":28,"domain":"信息安全保障","question":"《信息安全保障技术框架》( Information Assurance Technical Framework,IATF)是由哪个下面哪个国家发 布的","options":{"A":"中国","B":"美国","C":"俄罗斯","D":"欧盟"},"answer":"B"},{"id":29,"domain":"标准与法规","question":"我国信息安全保障工作先后经历了启动、逐步展开和积极推进,以及深化落实三个阶段,我国信息安全 保障各阶段说法不正确的是","options":{"A":"2001 年,国家信息化领导小组重组,网络与信息安全协调小组成立,我国信息安全保障工作正式启动 B 2003 年 7 月,国家信息化领导小组制定出台了《关于加强信息安全保障工作的意见》(中办发 27 号文件), 明确了“积极防御、综合防范”的国家信息安全保障工作方针","B":"2003 年 7 月,国家信息化领导小组制定出台了《关于加强信息安全保障工作的意见》(中办发 27 号文件),","C":"2003 年,中办发 27 号文件的发布标志着我国信息安全保障进入深化落实阶段","D":"在深化落实阶段,信息安全法律法规、标准化,信息安全基础设施建设,以及信息安全等级保护和风险评估 取得了新进展"},"answer":"C"},{"id":30,"domain":"安全管理","question":"信息安全测评是指依据相关标准,从安全功能等角度对信息技术产品、信息系统、服务提供商以及人员 进行测试和评估,以下关于信息安全测评说法不正确的是","options":{"A":"信息产品安全评估是测评机构对产品的安全性做出的独立评价,增强用户对已评估产品安全的信任","B":"目前我国常见的信息系统安全测评包括信息系统风险评估和信息系统安全保障测评两种类型","C":"信息安全工程能力评估是对信息安全服务提供者的资格状况、技术实力和实施服务过程质量保证能力的 具体衡量和评价","D":"信息系统风险评估是系统地分析网络与信息系统所面临的威胁及其存在的脆弱性,评估安全事件可能造 成的危害程度,提出有针对性的安全防护策略和整改措施"},"answer":"B"},{"id":31,"domain":"网络安全","question":"部署互联网协议安全虚拟专用网( Internet protocol Security Virtual Private Network,Ipsec VPN)时,以下说 法正确的是","options":{"A":"配置 MD5 安全算法可以提供可靠地数据加密","B":"配置 AES 算法可以提供可靠的数据完整性验证","C":"部署 Ipsec VPN 网络时,需要考虑 IP 地址的规划,尽量在分支节点使用可以聚合的 IP 地址段,来减少 Ipsec 安全关联( Security Authentication,SA)资源的消耗","D":"报文验证头协议( Authentication Header,AH)可以提供数据机密性"},"answer":"C"},{"id":32,"domain":"访问控制","question":"以下场景描述了基于角色的访问控制模型(Role- based Access control,RBAC)F 根据组织的业务要求或 管理要求,在业务系统中设置若干岗位、职位或分工。管理员负责将权限(不同类别和级别的)分别赋予承担 不同工作职责的用户。关于 RBAC 模型,下列说法错误的是","options":{"A":"当用户请求访问某资源时,如果其操作权限不再用户当前被激活角色的授权范围内,访问请 求将被拒绝","B":"业务系统中的岗位、职位或者分工,可对应 RBAC 模型中的角色","C":"通过角色,可实现对信息资源访问的控制","D":"RBAC 模型不能实现多级安全中的访问控制"},"answer":"D"},{"id":33,"domain":"密码学","question":"关于 Kerberos 认证协议,以下说法错误的是","options":{"A":"只要用户拿到了认证服务器(AS)发送的票据许可票据(TGT)并且该 TGT 没有过期,就可以使用该 TGT 通 过票据授权服务器(TGS)完成到任一个服务器的认证而不必重新输入密码","B":"认证服务器(AS)和票据授权服务器(TGS)是集中式管理,容易形成瓶颈,系统的性能和安全也严重依赖于 AS 和 TS 的性能和安全","C":"该协议通过用户获得票据许可票据、用户获得服务许可票据、用户获得服务三个阶段,仅支持服务器对用 户的单向认证","D":"该协议是一种基于对称密码算法的网络认证协议,随用户数量增加,密钥管理较复杂"},"answer":"C"},{"id":34,"domain":"网络安全","question":"传输控制协议(TCP)是传输层协议,以下关于 TCP 协议的说法,哪个是正确的?","options":{"A":"相比传输层的另外一个协议 UDP,TCP 既提供传输可靠性,还同时具有更高的效率,因此具有广泛的用途","B":"TCP 协议包头中包含了源 IP 地址和目的 IP 地址,因此 TCP 协议负责将数据传送到正确的主机","C":"TCP 协议具有流量控制、数据校验、超时重发、接收确认等机制,因此 TCP 协议能完全替代 IP 协议","D":"TCP 协议虽然高可靠,但是相比 UDP 协议机制过于复杂,传输效率要比 UDP 低"},"answer":"D"},{"id":35,"domain":"网络安全","question":"异常入侵检测系统常用的一种技术,它是识别系统或用户的非正常行为或者对于计算机资源的非正常 使用,从而检测出入侵行为。下面说法错误的是","options":{"A":"在异常入侵检测中,观察到的不是已知的入侵行为,而是系统运行过程中的异常现象","B":"异常入侵检测,是将当前获取行为数据和已知入侵攻击行为特征相比较,若匹配则认为有攻击发生","C":"异常入侵检测可以通过获得的网络运行状态数据,判断其中是否含有攻击的企图,并通过多种手段向管理 员报警","D":"异常入侵检测不但可以发现从外部的攻击,也可以发现内部的恶意行为"},"answer":"B"},{"id":36,"domain":"操作系统安全","question":"张主任的计算机使用 Windows7 操作系统,他常登陆的用户名为 zhang,张主任给他个人文件夹设置了 权限为只有 zhang 这个用户有权访问这个目录,管理员在某次维护中无意将 zhang 这个用户删除了,随后又 重新建了一个用户名为 zhang,张主任使用 zhang 这个用户登录系统后,发现无法访问他原来的个人文件夹, 原因是","options":{"A":"任何一个新建用户都需要经过授权才能访问系统中的文件","B":"Windows7 不认为新建立的用户 zhang 与原来的用户 zhang 是同一个用户,因此无权访","C":"用户被删除后,该用户创建的文件夹也会自动删除,新建用户找不到原来用户的文件夹,因此无法访问","D":"新建的用户 zhang 会继承原来用户的权限,之所以无权访问是因为文件夹经过了加密"},"answer":"A"},{"id":37,"domain":"操作系统安全","question":"以下关于 Windows 系统的账号存储管理机制( Security Accounts Manager)的说法哪个是正确的","options":{"A":"存储在注册表中的账号数据是管理员组用户都可以访问,具有较高的安全性","B":"存储在注册表中的账号数据只有 administrator 账户オ有权访问,具有较高的安全性","C":"存储在注册表中的账号数据任何用户都可以直接访问,灵活方便","D":"存储在注册表中的账号数据有只有 System 账户オ能访问,具有较高的安全性"},"answer":"D"},{"id":38,"domain":"身份鉴别","question":"某 Linux 系统由于 root 口令过于简单,被攻击者猜解后获得了 root 口令,发现被攻击后,管理员更改了 root 口令,并请安全专家对系统进行检测,在系统中发现有一个文件的权限如下-r-s-X-x1 test test 10704 Apr 15 2002 /home/test/sh 请问以下描述哪个是正确的:","options":{"A":"该文件是一个正常文件,是 test 用户使用的 shel1l,test 不能读该文件,只能执行","B":"该文件是一个正常文件,是 test 用户使用的 shel1,但 test 用户无权执行该文件","C":"该文件是一个后门程序,该文件被执行时,运行身份是 root,test 用户间接获得了 root 权限","D":"该文件是一个后门程序,可由于所有者是 test,因此运行这个文件时文件执行权限为 test"},"answer":"C"},{"id":39,"domain":"密码学","question":"加密文件系统( Encrypting File System,EFS)是 Windows 操作系统的一个组件。以下说法错误的是","options":{"A":"EFS 采用加密算法实现透明的文件加密和解密,任何不拥有合适密钥的个人或者程序都不能加密数据","B":"EFS 以公钥加密为基础,并利用了 Windows 系统中的 Cryptoapi 体系结构","C":"EFS 加密系统适用于 NTFS 文件系统和 FAT32 文件系统( Windows7 环境下)","D":"EFS 加密过程对用户透明,ES 加密的用户验证过程是在登录 Windows 时进行"},"answer":"C"},{"id":40,"domain":"访问控制","question":"数据库的安全很复杂,往往需要考虑多种安全策略,才可以更好地保护数据库的安全。以下关于数据库 常用的安全策略理解不正确的是:","options":{"A":"最小特权原则,是让用户可以合法的存取或修改数据库的前提下,分配最小的特权,使得这些信息恰好能够 完成用户的工作","B":"最大共享策略,在保证数据库的完整性、保密性和可用性的前提下,最大程度也共享数据库中的信息","C":"粒度最小策略,将数据库中的数据项进行划分,粒度越小,安全级别越高,在实际中需要选择最小粒度","D":"按内容存取控制策略,不同权限的用户访问数据库的不同部分"},"answer":"B"},{"id":41,"domain":"应用安全","question":"某单位计划在今年开发一套办公自化(OA)系统,将集团公司各地的机构通过互联网进行协同办公,在 OA 系统的设计方案评审会上,提出了不少安全开发的建议,作为安全专家,请指出大家提供的建议中不太合 适的一条","options":{"A":"对软件开发商提出安全相关要求,确保软件开发商对安全足够的重视,投入资源解决软件安全问题","B":"要求软件开发人员进行安全开发培训,是开发人员掌握基本软件安全开发知识","C":"要求软件开发商使用 Java 而不是 ASP 作为开发语言,避免产生 SQL 注入漏洞","D":"要求软件开发商对软件进行模块化设计,各模块明确输入和输出数据格式,并在使用前对输入数据进行校 验"},"answer":"C"},{"id":42,"domain":"安全工程","question":"某软件公司准备提高其开发软件的安全性,在公司内部发起了有关软件开发生命周期的讨论,在下面的 发言观点中,正确的是","options":{"A":"软件安全开发生命周期较长、阶段较多,而其中最重要的是要在软件的编码阶段做好安全措施就可以解决 90%以上的安全问题","B":"应当尽早在软件开发的需求和设计阶段就增加一定的安全措施,这样可以比在软件发布以后进行漏洞修 复所花的代价少得多","C":"和传统的软件开发阶段相比,微软提出的安全开发生命周期( Security Development Lifecycle,SDL)的最大特 点是增加了一个专门的安全编码阶段","D":"软件的安全测试也很重要,考虑到程序员的专业性,如果该开发人员已经对软件进行了安全性测试,就没有 必要在组织第三方进行安全性测试"},"answer":"B"},{"id":43,"domain":"数据安全","question":"下面有关软件安全问题的描述中,哪项应是由于软件设计缺陷引起的","options":{"A":"设计了三层 WEB 架构,但是软件存在 SQL 注入漏洞,导致被黑客攻击后直接访问数据库","B":"使用 C 语言开发时,采用了一些存在安全问题的字符串处理函数,导致存在缓冲区溢出漏洞","C":"设计了缓存用户隐私数据机制以加快系统处理性能,导致软件在发布运行后,被黑客攻击获取到用户隐私 数据","D":"使用了符合要求的密码算法,但在使用算法接口时,没有按照要求生成密钥,导致黑客攻击后能破解并得到 明文数据"},"answer":"C"},{"id":44,"domain":"信息安全保障","question":"关于信息安全管理,下面理解片面的是","options":{"A":"信息安全管理是组织整体管理的重要、固有组成部分,它是组织实现其业务目标的重要保障","B":"信息安全管理是一个不断演进、循环发展的动态过程,不是一成不变的","C":"在信息安全建设中,技术是基础,管理是拔高,及有效的管理依赖于良好的技术基础","D":"坚持管理与技术并重的原则,是我国加强信息安全保障工作的主要原则之一"},"answer":"C"},{"id":45,"domain":"标准与法规","question":"以下哪项制度或标准被作为我国的一项基础制度加以推行,并且有一定强制性,其实施的主要目标是有 效地提高我国信息和信息系统安全建设的整体水平,重点保障基础信息网络和重要信息系统的安全。","options":{"A":"信息安全管理体系(ISMS","B":"信息安全等级保护","C":"NIST SP800 系列","D":"ISO270000 系列"},"answer":"B"},{"id":46,"domain":"安全管理","question":"关于风险要素识别阶段工作内容叙述错误的是","options":{"A":"资产识别是指对需要保护的资产和系统等进行识别和分类","B":"威胁识别是指识别与每项资产相关的可能威胁和漏洞及其发生的可能性","C":"脆弱性识别以资产为核心,针对每一项需要保护的资产,识别可能被威胁利用的弱点,并对脆弱性的严重程 度进行评估","D":"确认已有的安全措施仅属于技术层面的工作,牽涉到具体方面包括:物理平台、系统平台、网络平台和应 用平台"},"answer":"D"},{"id":47,"domain":"应急响应","question":"关于业务连续性计划(BCP)以下说法最恰当的是","options":{"A":"组织为避所有业务功能因重大事件而中断,减少业务风险而建立的一个控制过程","B":"组织为避免关键业务功能因重大事件而中断,减少业务风险而建立的一个控制过程","C":"组织为避免所有业务功能因各种事件而中断,减少业务风险而建立的一个控制过程","D":"组织为避免信息系统功能因各种事件而中断,减少信息系统风险而建立的一个控制过程"},"answer":"B"},{"id":48,"domain":"应急响应","question":"在某次信息安全应急响应过程中,小王正在实施如下措施:消除或阻断攻击源、找到并消除系统的脆弱 性漏洞、修改安全策略、加强防范措施、格式化被感染恶意程序的介质等。请问按照 PDCER-应急响应 方法这些工作应处于以下哪个阶段","options":{"A":"准备阶段","B":"检测阶段","C":"遏制阶段","D":"根除阶段"},"answer":"D"},{"id":49,"domain":"应急响应","question":"关于信息安全事件管理和应急响应,以下说法错误的是","options":{"A":"应急响应是指组织为了应对突发/重大信息安全事件的发生所做的准备,以及在事件发生后所采取的措施","B":"应急响应方法,将应急响应管理过程分为遇制、根除、处置、恢复、报告和跟踪 6 个阶段","C":"对信息安全事件的分级主要参考信息系统的重要程度、系统损失和社会影响三方面因素","D":"根据信息安全事件的分级参考要素,可将信息安全事件划分为 4 个级别:特别重大事件(I 级)、重大事件(II 级)、较大事件(II1 级)和一般事件(IV 级)"},"answer":"B"},{"id":50,"domain":"数据安全","question":"以下关于灾难恢复和数据备份的理解,说法正确的是","options":{"A":"增量备份是备份从上次完全备份后更新的全部数据文件","B":"依据具备的灾难恢复资源程度的不同,灾难恢复能力分为 7 个等级","C":"数据备份按数据类型划分可以划分为系统数据备份和用户数据备份","D":"如果系统在一段时间内没有出现问题,就可以不用再进行容灾演练了"},"answer":"C"},{"id":51,"domain":"信息安全保障","question":"以下关于信息安全工程说法正确的是","options":{"A":"信息化建设中系统功能的实现是最重要的","B":"信息化建设可以先实施系统,而后对系统进行安全加固","C":"信息化建设中在规划阶段合理规划信息安全,在建设阶段要同步实施信息安全建设","D":"信息化建设没有必要涉及信息安全建设"},"answer":"C"},{"id":52,"domain":"安全工程","question":"有关系统安全工程-能力成熟度模型(SSE-CMM)中的基本实施( Base Practices,BP),正确的理解是","options":{"A":"BP 是基于最新技术而制定的安全参数基本配置","B":"大部分 BP 是没有经过测试的","C":"一项 BP 是用于组织的生存周期而非仅适用于工程的某一特定阶段","D":"一项 BP 可以和其他 BP 重叠"},"answer":"C"},{"id":53,"domain":"应用安全","question":"CC 标准是目前系统安全认证方面最权威的标准,以下哪一项没有体现 CC 标准的先进性?","options":{"A":"结构的开放性,即功能和保证要求都可以在具体的“保户轮廊”和“安全目标”中进一步细化和扩展","B":"表达方式的通用性,即给出通用的表达表示","C":"独立性,它强调讲安全的功能和保证分离","D":"实用性,将 CC 的安全性要求具体应用到 IT 产品的开发、生产、测试和评估过程中"},"answer":"C"},{"id":54,"domain":"标准与法规","question":"关于标准,下面哪项理解是错误的","options":{"A":"标准是在一定范围内为了获得最佳秩序,经协商一直制定并由公认机构批准,共同重复使用的种规范性文 件。标准是标准化活动的重要成果","B":"国际标准是由国家标准组织通过并公开发布的标准。同样是强制性标准,当国家标准和国际标准的条款发 生冲突时,应以国际标准条款为准","C":"行业标准是针对没有国家标准而又需要在全国某个行业范围内统一的技术要求而制定的标准。同样是强 制性标准,当行业标准和国家标准的条款发生冲突时,应以国家标准条款为准","D":"行业标准由省、自治区、直辖市标准化行政主管部门制定,并报国务院标准化行政主管部门和国务院有关 行政主管部门备案,在公布国家标准之后,该地方标准即应废止"},"answer":"B"},{"id":55,"domain":"标准与法规","question":"20054F, RFC4301 (Request for Comments4301 Security Architecture for theInternet Protocol)发布,用以取 代原先的 RFC2401,该标准建议规定了 Psec 系统基础架构,描述如何在 IP 层(IPv4IPv6)位流量提供安全业务。 请问此类 RFC 系列标准建议是由下面哪个组织发布的","options":{"A":"国际标准化组织( International Organization for Standardization,IS0)","B":"国际电工委员会( Int erna tio nal Elec trot echnical Commission,IEC)","C":"国际电信联盟远程通信标准化组织( ITU Telecommunication Standardization Sector, ITU-T","D":"Internet 工程任务组( Internet Engineering Task Force,IETF)"},"answer":"D"},{"id":56,"domain":"信息安全保障","question":"关于我国信息安全保障的基本原则,下列说法中不正确的是","options":{"A":"要与国际接轨,积极吸收国外先进经验并加强合作,遵循国际标准和通行做法,坚持管理与技术并重","B":"信息化发展和信息安全不是矛盾的关系,不能牺牲一方以保证另一方","C":"在信息安全保障建设的各项工作中,既要统筹规划,又要突出重点","D":"在国家信息安全保障工作中,要充分发挥国家、企业和个人的积极性,不能忽视任何一方的作用。"},"answer":"A"},{"id":57,"domain":"安全工程","question":"以下说法正确的是","options":{"A":"验收测试是同承建方和用户按照用户使用手册执行软件验收","B":"软件测试的目的是为了验证软件功能是否正确","C":"监理工程师应按照有关标准审査提交的测试计划,并提出审查意见","D":"软件测试计划开始于软件设计阶段,完成于软件开发阶段"},"answer":"C"},{"id":58,"domain":"网络安全","question":"在某网络机房建设项目中,在施工前,以下哪一项不属于监理需要审核的内容:","options":{"A":"审核实施投资计划","B":"审核实施进度计划","C":"审核工程实施人员","D":"企业资质"},"answer":"A"},{"id":59,"domain":"安全管理","question":"以下系统工程说法错误的是","options":{"A":"系统工程是基本理论的技术实现","B":"系统工程是一种对所有系统都具有普片意义的科学方法","C":"系统工程是组织管理系统规划、研究、制造、试验、使用的科学方法","D":"系统工程是一种方法论"},"answer":"A"},{"id":60,"domain":"网络安全","question":"关于密钥管理,下列说法错误的是","options":{"A":"科克霍夫原则指出算法的安全性不应基于算法的保密,而应基于密钥的安全性 B 保密通信过程中,通信方使用之前用过的会话钥建立会话,不影响通信安全 C 密钥管理需要考虑密钥产生、存储、备份、分配、更新撤销等生命周期过程的每一个环节","B":"保密通信过程中,通信方使用之前用过的会话钥建立会话,不影响通信安全","C":"密钥管理需要考虑密钥产生、存储、备份、分配、更新撤销等生命周期过程的每一个环节","D":"在网络通信过程中通信双方可利用 diffie- hell man 协议商出会话密钥"},"answer":"B"},{"id":61,"domain":"网络安全","question":"某网络安全公司基于网络的实时入侵检测技术,动态监测来自于外部网络和内部网络的所有访问行为 当检测到来自内外网络针对或通过防火墙的攻击行为,会及时响应并通知防火墙实时阻断攻击源,从而进一 步提高了系统的抗攻击能力,更有效地保护了网络资源,提高了防御体系级别。但入侵检测技术不能实现以 下哪种功能","options":{"A":"检测并分析用户和系统的活动","B":"核查系统的配置漏洞,评估系统关键资源和数据文件的完整性","C":"防止 IP 地址欺骗","D":"识别违反安全策略的用户活动"},"answer":"C"},{"id":62,"domain":"信息安全保障","question":"国务院信息化工作办公室于 2004 年 7 月份下发了《关于做好重要信息系统灾难备份工作的通知》, 该文件中指出了我国在灾备工作原则,下面哪项不属于该工作原则","options":{"A":"统筹规划","B":"分组建设","C":"资源共享","D":"平战结合"},"answer":"B"},{"id":63,"domain":"操作系统安全","question":"Windows 系统中,安全标识符(SID)是标识用户、组和计算机账户的唯一编码,在操作系统内部使用。 当授予用户、组、服务或者其他安全主体访问对象的权限时,操作系统会把 SID 和权限写入对象的 ACI 中, 小刘在学习了 SID 的组成后,为了现固所学知识,在自己计算机的 Windows 操作系统中使 whoami/ users 操 作査看当前用户的 SID。得到的 SlID 为 S-1-5-21-1534169462-1651380828-111620651-500,下列选项中, 关于此 SID 的理解错误的是","options":{"A":"前三位 S-1-5 表示此 SID 是由 Windows NT 颁发的","B":"第一个子颁发机构是 21","C":"Windows NTE 的 SID 的三个子颁发机构是 1534169462、1651380828、11620651","D":"此 SID 以 500 结尾,表示内置 guest 账户"},"answer":"D"},{"id":64,"domain":"身份鉴别","question":"letc/passwd 文件是 Unxlinux 安全的关键文件之一。该文件用于用户登录时校验用户的登录名、加 密的口令数据项、用户 ID(UID)、默认的用户分组 ID(GID)、用户信息、用户登录目录以及登录后使用的 shell 程序。某黑客设法窃取了银行账户管理系统的 passwd 文件后,发现每个用户的加密的口令数据项都显 示为 x。下列选项中,对此现象的解释正确的是","options":{"A":"黑客窃取的 passwd 文件是假的","B":"用户的登录口令经过不可逆的加密算法加密结果为'x","C":"加密口令被转移到了另一个文件里","D":"这些账户都被禁用了"},"answer":"C"},{"id":65,"domain":"网络安全","question":"以下关于互联网协议安全( Internet Protocol Security, Ipsec)协议说法错误的是","options":{"A":"在传送模式中,保护的是 IP 负载","B":"验证头协议( Authentication Head,AH)和 IP 圭寸装安全载荷协议( Encapsulating Security Pay load,ESP)都能以传输模式和隧道模式工作","C":"在隧道模式中,保护的是整个互联网协议( InternetProtoco1,IP)包,包括 IP 头","D":"Ipsec 仅能保证传输数据的可认证性和保密性"},"answer":"D"},{"id":66,"domain":"应急响应","question":"应急响应是信息事件管理的重要内容。基于应急响应工作的特点和事件的不规则性,事先制定出事件 应急响应方法和过程,有助于一个组织在事件发生时阻止混乱的发生或是在混乱状态中迅速恢复控制,将损 失和负面影响降到最低。应急响应方法和过程并不是唯一的。一种被广为接受的应急响应管理过程分为 6 个阶段为准备一检测-遏制-根除-恢复-跟踪总结。请问下列说法有关于信息安全应急响应管理过程错误 的是","options":{"A":"确定重要资产和风险,实施针对风险的防护措施是信息安全应急响应规划过程中最关键的步骤","B":"在检测阶段,首先要进行监测、报告及信息收集","C":"遏制措施可能会因为事件的类别和级别不同而完全不同,常见的遏制措施有:完全关闭所有系统拔掉网线","D":"应按照应急响应计划中事先制定的业务恢复优先顺序和恢复步骤,顺次恢复相关的系统。"},"answer":"C"},{"id":67,"domain":"网络安全","question":"随着互联网”概念的普及,越来越多的新兴住宅小区引入了“智能楼宇”的理念,某物业为提供高档次 的服务,防止网络主线路出现故障,保证小区内网络服务的可用,稳定、高效,计划通过网络冗余配置的是","options":{"A":"接入互联网时,同时采用不同电信运营商线路,相互备份且互不影响。","B":"核心层、汇聚层的设备和重要的接入层设备均应双机设备。","C":"规划网络 IP 地址,制定网络 IP 地址分配策略","D":"保证网络带宽和网络设备的业务处理能力具务冗余空间,满足业务高峰期和业务发展需求"},"answer":"B"},{"id":68,"domain":"数据安全","question":"基于 TCP 的主机在进行一次 TcP 连接时简要进行三次握手,请求通信的主机 A 要与另一台主机 B 建 立连接时,A 需要先发一个 SYN 数据包向 B 主机提出连接请示,B 收到后,回复一个 ACK/SYN 确认请示给 A 主机,然后 A 再次回应 ACK 数据包,确认连接请求。攻击通过伪造带有虚假源地址的 SYN 包给目标主机, 使目标主机发送的 ACSYN 包得不到确认。一般情况下,目标主机会等一段时间后才会放弃这个连接等待。 因此大量虚假 SYN 包同时发送到目标主机时,目标主机上就会有大量的连接请示等待确认,当这些未释放的 连接请示数量超过目标主机的资源限制时。正常的连接请示就不能被目标主机接受,这种 Syn food 攻击属 于","options":{"A":"拒绝服务攻击","B":"分布式拒绝服务攻击","C":"缓冲区溢出攻击","D":"SQL 注入攻击"},"answer":"A"},{"id":69,"domain":"应用安全","question":"某社交网站的用户点击了该网站上的一个广告。该广告含有一个跨站脚本,会将他的浏览器定向到旅 游网站,旅游网站则获得了他的社交网络信息。虽然该用户没有主动访问该旅游网站,但旅游网站已经截获 了他的社交网络信息(还有他的好友们的信息),于是犯罪分子便可以躲藏在社交网站的广告后面,截获用户 的个人信息了,这种向 Web 页面插入恶意 htm 代码的攻击方式称为","options":{"A":"分布式拒绝服务攻击","B":"跨站脚本攻击","C":"SQL 注入攻击","D":"缓冲区溢出攻击"},"answer":"B"},{"id":70,"domain":"应用安全","question":"模糊测试,也称 Fzz 测试,是一种通过提供非预期的输入并监视异常结果来发现软件故障的方法。下面 描述正确的是","options":{"A":"模糊测试本质上属于黑盒测试","B":"模糊测试本质上属于白盒测试","C":"模糊测试有时属于黑盒測试,有时属于白盒测试,取决于其使用的测试方法","D":"模糊测试既不属于黑盒測试,也不属于白盒测试"},"answer":"A"},{"id":71,"domain":"标准与法规","question":"若一个组织声称自己的 ISMS 符合 SO/=C27001 或 GBT22080 标准要求,其信息安全控制措施通常需 要在人力资源安全方面实施常规控制,人力资源安全划分为 3 个控制阶段,不包括哪一项","options":{"A":"任用之前","B":"任用中","C":"任用终止或变化","D":"任用公示"},"answer":"D"},{"id":72,"domain":"应用安全","question":"某信息安全公司的团队对某款名为红包快抢”的外挂进行分析发现此外挂是一个典型的木马后门,使 黑客能够获得受害者电脑的访问权,该后门程序为了达到长期驻留在受害者的计算机中,通过修改注册表启 动项来达到后门程序随受害者计算机系统启动而启动为防范此类木马的攻击,以下做法无用的是","options":{"A":"不下载、不执行、不接收来历不明的软件和文件","B":"不随意打开来历不明的邮件,不浏览不健康不正规的网站","C":"使用共享文件夹","D":"安装反病毒软件和防火墙,安装专门的木马防范软件"},"answer":"C"},{"id":73,"domain":"应急响应","question":"小华在某电子商务公司工作,某天他在査看信息系统没计文档时,发现其中标注该信息系统的 RPO(恢 复点目标)指标为 3 小时。请问这意味着","options":{"A":"该信息系统发生重大安全事件后,工作人员应在 3 小时内到位,完成问题定位和应急处理工作","B":"该信息系统发生重大安全事件后,工作人员应在 3 小时内完整应急处理工作并恢复对外运行","C":"该信息系统发生重大安全事件后,工作人员在完成处置和灾难恢复工作后,系统至少能提供 3 小时的紧急 业务服务能力","D":"该信息系统发生重大安全事件后,工作人员在完成处置和灾难恢复工作后,系统至多能丢失 3 小时的业务 数据"},"answer":"D"},{"id":74,"domain":"安全工程","question":"把瀑布模型和专家系统结合在一起在开发的各个阶段上都利用相应的专家系统来帮助软件人员完成 开发工作。","options":{"A":"原型模型","B":"螺旋模型","C":"基于知识的智能模型","D":"喷泉模型"},"answer":"C"},{"id":75,"domain":"操作系统安全","question":"下面对零日(zero-day)漏洞的理解中,正确的是","options":{"A":"指一个特定的漏洞,该漏洞每年 1 月 1 日零点发作,可以被攻击者用来远程攻击,获取主机权限","B":"指一个特定的漏洞精指在 200 被发现出来的一种洞,该漏洞被震网病毒所利用,用来攻击伊朗布什尔核电 站基础设施","C":"指一类漏洞,特别好被利用,一且成功利用该类漏洞可以在 1 天内完成攻击且成功达到攻击目标","D":"一类漏洞,刚被发现后立即被恶意利用的安全漏洞一般来说,那些已经被儿人发现,但是还未公开、还不 存在安全补丁的漏洞都是零日漏洞"},"answer":"D"},{"id":76,"domain":"安全管理","question":"GB/T20984-2007《信息安全技术信息安全义批详选规范》、对 10 个()进行了定义阐述其相关关系,规 定了()的原理和()规定了风险评估实施的 7 个阶段的具体方法和要求,规定了针对信息系统()5 个阶段风险评 估的常见(),给出了风险评估的一般计算方法和相关工具建议。","options":{"A":"风险要素;风险评估;实施流程;生命周期;工作形式","B":"风险要素;实施流程;风险评估;生命周期:工作形式 C","C":"风险要素;生命周期:风险评估;实施流程;工作形式 D","D":"风险要素;工作形式;风险评估;实施流程:生命周期"},"answer":"A"},{"id":77,"domain":"密码学","question":"超文本传输协议(HypertextTransferProtocolHTTP)是互联网上广泛使用的一种网络协议,下面哪种协议 基于 HTTP 并结合 SSL 协议,具备用户鉴别和通信数据加密等功能","options":{"A":"HTTP1.0 协议","B":"HTTP1.1 协议","C":"HTTPS 协议","D":"HTTPD 协议"},"answer":"C"},{"id":78,"domain":"访问控制","question":"访问控制的实施一般包括两个步骤首先要鉴别主体的合法身份,根据当前系统的访问控制规则授予用 户相应的访问权限。在此过涉及主体、客体、访问控制实施部件和访问控制决策部件之间的交互。下图所 示的访问控制实施步骤中,标有数字的方框代表了主体、客体、访问控制实施部件和访问控制决策部件。下 列选项中,标有数字 1、2、3、4 的方框分别对应的实体或部件正确的是","options":{"A":"主体、访问控别决策、客体、访问控制实施","B":"主体、访问控制实施,客体、访问控制决策","C":"客体、访问控制决策、主体、访问控制实施","D":"客体、访问控制实施、主体、访问控制决策"},"answer":"B"},{"id":79,"domain":"身份鉴别","question":"/etc/ passwd 文件是 UN/Linux 安全的关键文件之。该文件用于用户登录时校验用户的登录名、加密 的口令数据项、用户 ID(UID)、默认的用户分组 ID(GID)、用户信息、用户登录目录以及登录后使用的 shell i 程序。某黑客设法窃取了银行账户管理系统的 passwd 文件后,发现每个用户的加密的口令数据项都显示为 X。下列选项中,对此现象的解释正确的是","options":{"A":"黑客窃取的 passwd 文件是假的","B":"用户的登录口令经过不可逆的加密算法加密结果为“X”","C":"加密口令被转移到了另一个文件里","D":"这些账户都被禁用了"},"answer":"C"},{"id":80,"domain":"应急响应","question":"关于信息安全应急响应管理过程描述不正确的是","options":{"A":"基于应急响应工作的特点和事件的不规则性,事先制定出事件应急响应方法和过程,有助于一个组织在事 件发生时阻止混乱的发生或是在混乱状态中迅速恢复控制,将损失和负面影响降至最低","B":"应急响应方法和过程并不是唯一的","C":"一种被广为接受的应急响应方法是将应急响应管理过程分为准备、检测、遏制、根除、恢复和跟踪总 结 6 个阶段","D":"一种校广为接受的应色的应方法是将应色响应管理过程分为准备检刻、遏制、根除、恢复和跟踪总结 6 个阶段,这 6 个阶段的响应方法一定能确保事件处理的成功"},"answer":"D"},{"id":81,"domain":"访问控制","question":"在信息系统中,访问控制是重要的安全功能之一,它的任务是在用)系统资源提供最大限度共享的基础上, 对用户的访问权限进行管理,防止对信息的非授权算改和滥用。访问控制模型将实体划分为主体和客体两类, 通过对主体身份的识别来限制其对客体的访问权限。下列选项中,对主体、客体和访问权限的描述中错误的 是","options":{"A":"对文件进行操作的用户是一种主体 B 主体可以接收客体的信息和数也可能改变客体相关的信息","B":"主体可以接收客体的信息和数也可能改变客体相关的信息","C":"访问权限是指主体对客体所允许的操作","D":"对目录的访问权限可分为读、写 答案：如果如上的 ABCD 的话，则选择 C 是错误的。如果 D 的答案有“拒绝访问”则选择 D 是错误的。"},"answer":"C"},{"id":82,"domain":"网络安全","question":"小李在上网时不小心点开了假冒某银行的钓鱼网站,误输入了银行账号与密码损失上千元,他的操作如 右图所示,他所受到的攻击是","options":{"A":"ARP 欺骗","B":"DNS 欺骗","C":"IP 欺骗","D":"TCP 会话"},"answer":"B"},{"id":83,"domain":"标准与法规","question":"根据我国信息安全等级保护的有关政策和标准,有些信息系统只需要自主定级、自主保护,按照要向公 安机关备案即可,可以不需向上级或主管部门来测评和检査,此类信息系统应属于","options":{"A":"零级系统","B":"一级系统","C":"二级系统","D":"三级系统"},"answer":"C"},{"id":84,"domain":"密码学","question":"20 世纪 20 年代,德国发明家亚瑟・谢尔比鸟斯( Auntur scherbius)和理査德,里特( Richard Ritter 发明了 ENIGMA 密码机,看密码学发展历史阶段划分,这个阶段属于","options":{"A":"古典密码阶段;这一阶段的密码专家常常靠直觉和技巧来设计密码,而不是推理和证明.常用的密码运算方 法包括替代方法和置换方法。","B":"近代密码发展阶段。这一阶段开始使用机械代替手工计算,形成了机械式密码设备和更进一步的机电密码 设备","C":"现代密码学的早起发展阶段。这一阶段以香农的论文“保密系统的通信理论”( the communication theory of secret systems)为理论基础,开始了对密码学的科学探索。","D":"现代密码学的近期发展阶段。这一阶段以公钥密码思想为标志,引发了密码学历史上的革命性的变革,同 时,众多的密码算法开始应用于非机密单位和商业场合"},"answer":"B"},{"id":85,"domain":"应用安全","question":"某单位开发了个面向互联网提供服务的应用网站,该单位委托软件测评机构对软件进行了源代码分析、 模糊测试等软件安全性测试,在应用上线前,项目经理提出了还需要对应用网站进行一次渗透测试,作为安全 主管,你需要提出滲透性测试相比源代码测试、模糊测试的优势给领导做决策,以下哪条是渗透性测试的优 势?","options":{"A":"滲透测试以攻击者的思维模拟真实攻击,能发现如配置错等运行维护所产生的漏洞 渗透测试是用软件代替人工的一种测试方法,因此测试效更高","C":"渗透测试使用人工进行测试,不依赖软件,因此测试更准洞更多酒渗透测试中必须要査","D":"渗透测试必须査看看软件源代码,因此测试中发现的漏洞更多"},"answer":"A"},{"id":86,"domain":"安全管理","question":"随着金融电子化的发展,全球金融通信网络已出具规模。某金融单位组建的计算机通信网络覆盖全国, 有力的促进了该企业各种金融业务的发展。然而网络技术的普及、网络规模规模的延伸,开始逐步让该企业 对网络安全提出了更高的要求。为了进一步促进金融电子化的建设,保障金融网络安全运行,该企业经过前 期充分的调研分析与论证,实施了防火墙 NPN 系统建设项目。防火墙不能实现的安全功能是","options":{"A":"对出入网络的访问行为进行管理和控制","B":"过滤出入网络的数据,强化安全策略","C":"隐藏内部网络细节","D":"评估系统关键资源和数据完整性,识别已知的攻击行为"},"answer":"D"},{"id":87,"domain":"安全管理","question":"风险分析是风险评估工作中的一个重要内容,GB3T20984-2007 在资料性附录中给出了一种矩阵法来 计算信息安全风险大小,其中风险计算矩阵如下图所示,请为途中括号空白处选择合适的内容","options":{"A":"安全资产价值大小等级","B":"脆弱性严重程度等级","C":"安全风险隐患严重等级 D 安全事件造成损失大小","D":"安全事件造成损失大小"},"answer":"D"},{"id":88,"domain":"访问控制","question":"某电子商务网站架构设计时,为了避免数据误操作,在管理员进行订单删除时,需要由审核员进行审核后 该操作才能生效,这种设计是遵循了以下哪个原则:","options":{"A":"权限分离原则","B":"最小特权原则","C":"保护最薄弱环节的原则","D":"纵深防御的原则"},"answer":"A"},{"id":89,"domain":"网络安全","question":"安全漏洞产生的原因不包括以下哪一点","options":{"A":"软件系统代码的复杂性","B":"软件系统市场出现的信息不对称现象","C":"复杂异构的网络环境","D":"攻击者的恶意利用"},"answer":"D"},{"id":90,"domain":"标准与法规","question":"关于计算机取证描述不正确的是","options":{"A":"计算机取证是使用先进的技术和工具,按照标准规程全面地检査计算机系统,以提取和保护有关计算机犯 罪的相关证据的活动","B":"取证的目的包括:通过证据査找肇事者、通过证据推断犯罪过程、通过证据判断受害者损失程度及收集 证据提供法律支持","C":"电子证据是计算机系统运行过程中产生的各种信息记录及存储的电子化资料及物品。对于电子证据,取 证工作主要围绕两方面进行:证据的获取和证据的保护","D":"计算机取证的过程可以分为准备、保护、提取、分析和提交 5 个步骤"},"answer":"C"},{"id":91,"domain":"信息安全保障","question":"小李是某公司的系统规划师,某天他针对公司信息系统的现状,绘制了一张系统安全建设规划图,如下图 所示,请问这个图形是依据下面哪个模型来绘制的","options":{"A":"PDRB","B":"PPDR","C":"PDCA","D":"IATF"},"answer":"B"},{"id":92,"domain":"操作系统安全","question":"某攻击者想通过远程控制软件潜伏在某监控方的 Unix 系统的计算机中,如果攻击者打算长时间地远程 监控某服务器上的存储的敏感数据,必须要能够清除在监控方计算机中存在的系统日志。否则当监控方査看 己的系统日志的时候,就会发现被监控以及访问的痕迹。不属于清除痕迹的方法是","options":{"A":"窃取 root 权限修改 wtmp/ wtmpxutmpx 和 Q1 astro 三个主要日志文件","B":"采用干扰手段影响系统防火墙的审计功能","C":"保留攻击时产生的临时文件","D":"修改登录日志,伪造成功的登录日志,增加审计难度"},"answer":"C"},{"id":93,"domain":"数据安全","question":"以下 SQL 语句建立的数据库对象是 4 Create View Patients Fordocotors As ◆ Select Patient FROM Patient. Docotor ◆ Where docotorld=123","options":{"A":"表","B":"视图"},"answer":"B"},{"id":94,"domain":"网络安全","question":"某银行有 5 台交换机连接了大量交易机构的网络,在基于以太网的通信中,计算机 A 需要与计算机 B 通信,A 必须先广播 ARP 请求信息“,获取计算机 B 的物理地址。每到月底时用户发现该银行网络服务速度 极其缓慢。银行经调査发现为了当其中一台交换机收到 ARP 请求后,会转发给接收端口以外的其他端 口,ARP 请求会被转发到网络中的所有客户机上。为降低网络的带宽消耗,将广播流限制在固定区域内,可以 采用的技术是","options":{"A":"VLAN 划分","B":"动态分配地址","C":"为路由交换设备修改默认口令","D":"设立入侵防御系统"},"answer":"A"},{"id":95,"domain":"应用安全","question":"某公司中标了某项软件开发项目后,在公司内部研讨项目任务时,项目组认为之前在 VPN 技术方面积 累不够,导致在该项目中难以及时完成 VPN 功能模块,为解决该问题,公司高层决定接受该项目任务,同时将 该 VPN 功能模块以合同形式委托另外一家安全公司完成,要求其在指定时间内按照任务需求书完成工作, 否则承担相应责任。在该案例中公司高层采用哪种风险处理方式","options":{"A":"风险降低","B":"风险规避","C":"凤险转移","D":"风险接受"},"answer":"C"},{"id":96,"domain":"职业道德","question":"作为信息安全从业人员,以下那种行为违反了 CISP 职业道德准则","options":{"A":"抵制通过网络系统侵犯公众合法权益","B":"通过公众网络传播非法软件","C":"不在计算机网络系统中进行造谣、欺诈、诽谤等活动","D":"帮助和指导信息安全同行提开信息安全保障知识和能力"},"answer":"B"},{"id":97,"domain":"安全管理","question":"目前,很多行业用户在进行信息安全产品选项时,均要求产品高通过安全测评。关于信息安全产品测评 的意义,下列说法中不正确的是:","options":{"A":"有助于建立和实施信息安全产品的市场准入制度","B":"对用户采购信息安全产品,设计、建设、使用和管理安全的信息系统提供科学公正的专业指导","C":"对信息安全产品的研究、开发、生产以及信息安全服务的组织提供严格的规范引导和质量监督","D":"打破市场垄断,为信息安全产业发展创造一个良好的竞争环境"},"answer":"D"},{"id":98,"domain":"身份鉴别","question":"实体身份鉴别的方法多种多样,且随着技术的进步,鉴别方法的强度不断提高,常见的方法有利用口令鉴 别、令牌鉴别、指纹鉴别等。如图,小王在登录某移动支付平台时,首先需要通过指纹对用户身份进行鉴别。 通过鉴别后,他才能作为合法用户使用自己的账户进行支付、转账等","options":{"A":"实体所知的鉴别方法","B":"实体所有的鉴别方法","C":"实体特征的鉴别方法","D":"实体所见的鉴别方法"},"answer":"C"},{"id":99,"domain":"密码学","question":"某购物网站开发项目经过需求分析进入系统设计阶段,为了保证用户帐户安全,项目开发人员决定用户 登录时除了用户名口令认证方式外,还加入基于数字证书的身份认证功能,同时用户口令使用 SHA 一 1 算法 加密后存放在后台数据库中,请问以上安全设计遵循的是哪项安全设计原则:","options":{"A":"最小特权原则","B":"职责分离原则","C":"纵深防御原则","D":"最少共享机制原贝"},"answer":"C"},{"id":100,"domain":"标准与法规","question":"SO 27002(nformation technology- Securtiy Techniques-code of practice for informationmanagement)是重 要的信息安全管理标准之一,下图是关于其演进变化示意图,途中括号空白处应填写?","options":{"A":"B.7799.1.3","B":"IS017799 C AS/NZS4630","C":"NST SP800-17 BS7799 管理措施，BS7799.2 信息安全要求-ISO27001 BS7799 管理措施-BS7799.1->ISO 17799 -> ISO27002"},"answer":"B"}];
+
+// ===== State =====
+const STORAGE_KEY = 'cisp_quiz_state';
+let state = loadState();
+let practiceSession = null;
+let examSession = null;
+
+function loadState(){
+  try{const s = localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):{answered:{},wrong:new Set()}}
+  catch(e){return {answered:{},wrong:new Set()}}
+}
+function saveState(){
+  try{localStorage.setItem(STORAGE_KEY, JSON.stringify({...state, wrong:[...state.wrong]}))}
+  catch(e){}
+}
+
+// ===== Domain config =====
+const DOMAIN_ORDER = ['信息安全保障','标准与法规','密码学','访问控制','身份鉴别','网络安全','操作系统安全','应用安全','数据安全','安全管理','应急响应','安全工程','职业道德'];
+const DOMAIN_LABELS = {
+  '信息安全保障':'信息安全保障','标准与法规':'标准与法规','密码学':'密码学基础','访问控制':'访问控制',
+  '身份鉴别':'身份鉴别','网络安全':'网络安全','操作系统安全':'操作系统安全','应用安全':'应用安全',
+  '数据安全':'数据安全','安全管理':'信息安全管理','应急响应':'应急响应','安全工程':'安全工程','职业道德':'职业道德'
+};
+
+function getDomainQuestions(domain){
+  return QUESTIONS.filter(q=>q.domain===domain);
+}
+function getWrongQuestions(){
+  return QUESTIONS.filter(q=>state.wrong.has(q.id));
+}
+
+// ===== View Switching =====
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  if(name==='dashboard') renderDashboard();
+}
+
+function goHome(){
+  practiceSession=null;examSession=null;
+  switchView('dashboard');
+}
+
+// ===== Dashboard =====
+function renderDashboard(){
+  // Stats
+  const answered = Object.keys(state.answered).length;
+  const correct = Object.entries(state.answered).filter(([id,a])=>{
+    const q = QUESTIONS.find(x=>x.id==id);return q&&a===q.answer;
+  }).length;
+  const wrongCount = state.wrong.size;
+  const accuracy = answered>0?Math.round(correct/answered*100):0;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${answered}</div><div class="stat-label">已答题</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--correct)">${correct}</div><div class="stat-label">答对</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--wrong)">${wrongCount}</div><div class="stat-label">错题</div></div>
+    <div class="stat-card"><div class="stat-value">${accuracy}%</div><div class="stat-label">正确率</div></div>
+  `;
+
+  // Domain grid
+  const grid = document.getElementById('domainGrid');
+  grid.innerHTML = DOMAIN_ORDER.map(d=>{
+    const qs = getDomainQuestions(d);
+    if(qs.length===0) return '';
+    const answeredInDomain = qs.filter(q=>state.answered[q.id]).length;
+    const pct = qs.length>0?Math.round(answeredInDomain/qs.length*100):0;
+    return `
+      <div class="domain-item" onclick="startPractice('domain','${d}')">
+        <div style="flex:1">
+          <div class="domain-name">${DOMAIN_LABELS[d]||d}</div>
+          <div class="domain-progress-bar"><div class="domain-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="domain-count">${qs.length}</div>
+      </div>`;
+  }).join('');
+}
+
+// ===== Practice Mode =====
+function startPractice(mode, domain){
+  let questions;
+  let title;
+  if(mode==='all'){questions=[...QUESTIONS];title='全部题目'}
+  else if(mode==='random'){questions=[...QUESTIONS].sort(()=>Math.random()-0.5);title='随机练习'}
+  else if(mode==='wrong'){
+    questions=getWrongQuestions();
+    if(questions.length===0){alert('暂无错题，继续加油！');return}
+    title='错题重练';
+  }
+  else if(mode==='domain'){questions=getDomainQuestions(domain);title=DOMAIN_LABELS[domain]||domain}
+
+  practiceSession = {
+    questions: questions,
+    index: 0,
+    answers: {},
+    title: title
+  };
+
+  document.getElementById('practiceDomain').textContent = title;
+  document.getElementById('practiceTotal').textContent = questions.length;
+  document.getElementById('examSetup')&&(document.getElementById('examSetup').style.display='none');
+
+  switchView('practice');
+  renderPracticeQuestion();
+}
+
+function renderPracticeQuestion(){
+  const s = practiceSession;
+  if(!s) return;
+  const q = s.questions[s.index];
+  if(!q){goHome();return}
+
+  document.getElementById('practiceCurrent').textContent = s.index+1;
+  document.getElementById('practiceProgress').style.width = ((s.index+1)/s.questions.length*100)+'%';
+
+  const userAnswer = s.answers[q.id];
+  const showResult = !!userAnswer;
+
+  const optionsHTML = ['A','B','C','D'].filter(l=>q.options[l]).map(letter=>{
+    let cls = 'option-item';
+    if(showResult){
+      cls += ' disabled';
+      if(letter===q.answer) cls += ' correct';
+      else if(letter===userAnswer) cls += ' wrong';
+    }
+    return `
+      <div class="${cls}" onclick="${showResult?'':'selectPracticeAnswer('+letter.charCodeAt(0)+')'}">
+        <div class="option-letter">${letter}</div>
+        <div class="option-text">${q.options[letter]}</div>
+      </div>`;
+  }).join('');
+
+  let feedbackHTML = '';
+  if(showResult){
+    const isCorrect = userAnswer===q.answer;
+    feedbackHTML = `<div class="feedback-box ${isCorrect?'correct':'wrong'}">
+      ${isCorrect?'✓ 回答正确':'✗ 正确答案：'+q.answer}
+    </div>`;
+  }
+
+  document.getElementById('practiceContent').innerHTML = `
+    <div class="question-card">
+      <div class="q-number">第 ${s.index+1} 题 · ${DOMAIN_LABELS[q.domain]||q.domain}</div>
+      <div class="q-text">${q.question}</div>
+      <div class="options-list">${optionsHTML}</div>
+      ${feedbackHTML}
+    </div>`;
+
+  // Controls
+  document.getElementById('practiceControls').style.display='flex';
+  document.getElementById('practiceNextBtn').disabled = !showResult;
+  document.getElementById('practiceNextBtn').textContent = s.index<s.questions.length-1?'下一题':'完成';
+
+  renderPalette('practice');
+}
+
+function selectPracticeAnswer(letterCode){
+  const s=practiceSession;if(!s)return;
+  const letter = String.fromCharCode(letterCode);
+  const q = s.questions[s.index];
+  s.answers[q.id] = letter;
+  state.answered[q.id] = letter;
+  if(letter!==q.answer) state.wrong.add(q.id);
+  else state.wrong.delete(q.id);
+  saveState();
+  renderPracticeQuestion();
+}
+
+function nextPracticeQuestion(){
+  const s=practiceSession;if(!s)return;
+  if(s.index<s.questions.length-1){s.index++;renderPracticeQuestion()}
+  else{
+    // Summary
+    const total=s.questions.length;
+    const answered=Object.keys(s.answers).length;
+    const correct=s.questions.filter(q=>s.answers[q.id]===q.answer).length;
+    alert(`练习完成！\n共${total}题，答对${correct}题，正确率${Math.round(correct/total*100)}%`);
+    goHome();
+  }
+}
+
+function prevPracticeQuestion(){
+  const s=practiceSession;if(!s)return;
+  if(s.index>0){s.index--;renderPracticeQuestion()}
+}
+
+// ===== Palette =====
+function togglePalette(type){
+  const panel=document.getElementById(type+'Palette');
+  panel.classList.toggle('show');
+}
+function renderPalette(type){
+  const s=type==='practice'?practiceSession:examSession;
+  if(!s)return;
+  const panel=document.getElementById(type+'Palette');
+  panel.innerHTML=`
+    <div class="palette-title">题目导航（点击跳转）</div>
+    <div class="palette-grid">
+      ${s.questions.map((q,i)=>{
+        const ans=s.answers[q.id];
+        let cls='palette-cell';
+        if(i===s.index)cls+=' current';
+        else if(ans){
+          cls+= ans===q.answer?' done':' wrong';
+        }
+        return `<div class="${cls}" onclick="jumpToQuestion('${type}',${i})">${i+1}</div>`;
+      }).join('')}
+    </div>`;
+}
+function jumpToQuestion(type,index){
+  if(type==='practice'&&practiceSession){practiceSession.index=index;renderPracticeQuestion()}
+  if(type==='exam'&&examSession){examSession.index=index;renderExamQuestion()}
+  document.getElementById(type+'Palette').classList.remove('show');
+}
+
+// ===== Exam Mode =====
+function startExam(){
+  examSession={
+    questions:[...QUESTIONS].sort(()=>Math.random()-0.5),
+    index:0,
+    answers:{},
+    startTime:Date.now(),
+    duration:60*60*1000,
+    submitted:false
+  };
+  document.getElementById('examSetup').style.display='none';
+  document.getElementById('examContent').style.display='block';
+  document.getElementById('examResult').style.display='none';
+  switchView('exam');
+  renderExamQuestion();
+  startExamTimer();
+}
+
+let examTimerId=null;
+function startExamTimer(){
+  if(examTimerId) clearInterval(examTimerId);
+  examTimerId=setInterval(()=>{
+    if(!examSession||examSession.submitted){clearInterval(examTimerId);return}
+    const elapsed=Date.now()-examSession.startTime;
+    const remaining=examSession.duration-elapsed;
+    if(remaining<=0){submitExam();return}
+    const m=Math.floor(remaining/60000);
+    const s=Math.floor((remaining%60000)/1000);
+    const el=document.getElementById('examTimer');
+    if(el)el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  },1000);
+}
+
+function renderExamQuestion(){
+  const s=examSession;if(!s)return;
+  const q=s.questions[s.index];if(!q)return;
+
+  const userAnswer=s.answers[q.id];
+  const optionsHTML=['A','B','C','D'].filter(l=>q.options[l]).map(letter=>{
+    let cls='option-item';
+    if(userAnswer===letter)cls+=' correct';
+    return `<div class="${cls}" onclick="selectExamAnswer(${letter.charCodeAt(0)})">
+      <div class="option-letter">${letter}</div>
+      <div class="option-text">${q.options[letter]}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('examContent').innerHTML=`
+    <div class="quiz-header">
+      <div class="quiz-info">
+        <span class="quiz-domain-tag">${DOMAIN_LABELS[q.domain]||q.domain}</span>
+        <span class="quiz-counter"><span>${s.index+1}</span> / <span>${s.questions.length}</span></span>
+      </div>
+      <div class="quiz-timer" id="examTimer">60:00</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${(s.index+1)/s.questions.length*100}%"></div></div>
+    <div class="question-card">
+      <div class="q-number">第 ${s.index+1} 题</div>
+      <div class="q-text">${q.question}</div>
+      <div class="options-list">${optionsHTML}</div>
+    </div>
+    <div class="quiz-controls">
+      <button class="btn btn-ghost" onclick="prevExamQuestion()" ${s.index===0?'disabled':''}>上一题</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-danger" onclick="submitExam()">交卷</button>
+        <button class="btn btn-primary" onclick="nextExamQuestion()">${s.index<s.questions.length-1?'下一题':'完成'}</button>
+      </div>
+    </div>
+    <div class="palette-toggle" onclick="togglePalette('exam')" title="题目导航">≡</div>
+    <div class="palette-panel" id="examPalette"></div>
+  `;
+  renderPalette('exam');
+}
+
+function selectExamAnswer(letterCode){
+  const s=examSession;if(!s)return;
+  const letter=String.fromCharCode(letterCode);
+  const q=s.questions[s.index];
+  s.answers[q.id]=letter;
+  renderExamQuestion();
+}
+function nextExamQuestion(){
+  const s=examSession;if(!s)return;
+  if(s.index<s.questions.length-1){s.index++;renderExamQuestion()}
+  else{submitExam()}
+}
+function prevExamQuestion(){
+  const s=examSession;if(!s)return;
+  if(s.index>0){s.index--;renderExamQuestion()}
+}
+
+function submitExam(){
+  const s=examSession;if(!s)return;
+  s.submitted=true;
+  if(examTimerId)clearInterval(examTimerId);
+
+  const total=s.questions.length;
+  const correct=s.questions.filter(q=>s.answers[q.id]===q.answer).length;
+  const wrong=s.questions.filter(q=>s.answers[q.id]!==q.answer);
+  const unanswered=s.questions.filter(q=>!s.answers[q.id]).length;
+  const score=Math.round(correct/total*100);
+  const passed=score>=60;
+
+  // Save to state
+  s.questions.forEach(q=>{
+    if(s.answers[q.id]){
+      state.answered[q.id]=s.answers[q.id];
+      if(s.answers[q.id]!==q.answer)state.wrong.add(q.id);
+      else state.wrong.delete(q.id);
+    }
+  });
+  saveState();
+
+  const reviewHTML=wrong.map(q=>{
+    const ua=s.answers[q.id]||'未作答';
+    return `<div class="review-item wrong">
+      <div class="review-q">${q.id}. ${q.question.substring(0,80)}${q.question.length>80?'...':''}</div>
+      <div class="review-answer">
+        <span class="review-tag your">你的答案：${ua}</span>
+        <span class="review-tag correct">正确答案：${q.answer}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('examContent').style.display='none';
+  document.getElementById('examResult').style.display='block';
+  document.getElementById('examResult').innerHTML=`
+    <div class="result-card">
+      <div style="font-size:1rem;color:var(--text-dim)">考试完成</div>
+      <div class="result-score ${passed?'pass':'fail'}">${score}分</div>
+      <div class="result-detail">${passed?'恭喜通过！':'未达到60分及格线，继续努力'}</div>
+      <div class="result-stats">
+        <div class="result-stat"><div class="result-stat-val" style="color:var(--correct)">${correct}</div><div class="result-stat-lbl">答对</div></div>
+        <div class="result-stat"><div class="result-stat-val" style="color:var(--wrong)">${wrong.length}</div><div class="result-stat-lbl">答错</div></div>
+        <div class="result-stat"><div class="result-stat-val" style="color:var(--text-dim)">${unanswered}</div><div class="result-stat-lbl">未答</div></div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center">
+        <button class="btn btn-primary" onclick="resetExam()">再考一次</button>
+        <button class="btn btn-ghost" onclick="goHome()">返回首页</button>
+      </div>
+    </div>
+    ${wrong.length>0?`<div class="result-review"><div class="section-title">错题回顾</div>${reviewHTML}</div>`:''}
+  `;
+}
+
+function resetExam(){
+  examSession=null;
+  document.getElementById('examResult').style.display='none';
+  document.getElementById('examContent').style.display='none';
+  document.getElementById('examSetup').style.display='block';
+}
+
+// ===== Init =====
+renderDashboard();
+</script>
+</body>
+</html>
